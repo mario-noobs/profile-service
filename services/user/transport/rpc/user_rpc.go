@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"demo-service/proto/pb"
+	"demo-service/services/user/business"
 	"demo-service/services/user/entity"
 	"fmt"
 	"github.com/viettranx/service-context/core"
@@ -15,11 +16,38 @@ type Business interface {
 }
 
 type grpcService struct {
-	business Business
+	business   Business
+	repository business.UserRepository
 }
 
-func NewService(business Business) *grpcService {
-	return &grpcService{business: business}
+func (s *grpcService) GetUserProfile(ctx context.Context) (*pb.User, error) {
+	requester := core.GetRequester(ctx)
+
+	uid, _ := core.FromBase58(requester.GetSubject())
+	requesterId := int(uid.GetLocalID())
+
+	user, err := s.repository.GetUserById(ctx, requesterId)
+
+	if err != nil {
+		return nil, core.ErrUnauthorized.
+			WithError(entity.ErrCannotGetUser.Error()).
+			WithDebug(err.Error())
+	}
+
+	return &pb.User{
+		Email:     user.Email,
+		Phone:     user.Phone,
+		LastName:  user.LastName,
+		FirstName: user.FirstName,
+		//Gender:     user.Gender,
+		//Status:     user.Status,
+		//SystemRole: user.SystemRole,
+		Avatar: user.Avatar,
+	}, nil
+}
+
+func NewService(business Business, repository business.UserRepository) *grpcService {
+	return &grpcService{business: business, repository: repository}
 }
 
 func (s *grpcService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.PublicUserInfoResp, error) {

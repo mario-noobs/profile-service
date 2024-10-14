@@ -20,23 +20,6 @@ func NewBusiness(repository UserRepository) *business {
 	return &business{repository: repository}
 }
 
-func (biz *business) GetUserProfile(ctx context.Context) (*entity.User, error) {
-	requester := core.GetRequester(ctx)
-
-	uid, _ := core.FromBase58(requester.GetSubject())
-	requesterId := int(uid.GetLocalID())
-
-	user, err := biz.repository.GetUserById(ctx, requesterId)
-
-	if err != nil {
-		return nil, core.ErrUnauthorized.
-			WithError(entity.ErrCannotGetUser.Error()).
-			WithDebug(err.Error())
-	}
-
-	return user, nil
-}
-
 func (biz *business) GetUserDetails(ctx context.Context, id int) (*entity.User, error) {
 	user, err := biz.repository.GetUserById(ctx, id)
 

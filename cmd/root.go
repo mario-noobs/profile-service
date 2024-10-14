@@ -59,24 +59,24 @@ var rootCmd = &cobra.Command{
 
 		go StartGRPCServices(serviceCtx)
 
-		v1 := router.Group("/v1")
-
-		SetupRoutes(v1, serviceCtx)
-
+		//v1 := router.Group("/v1")
+		//
+		//SetupRoutes(v1, serviceCtx)
+		//
 		if err := router.Run(fmt.Sprintf(":%d", ginComp.GetPort())); err != nil {
 			logger.Fatal(err)
 		}
 	},
 }
 
-func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
-
-	userAPIService := composer.ComposeUserAPIService(serviceCtx)
-
-	requireAuthMdw := middleware.RequireAuth(composer.ComposeAuthRPCClient(serviceCtx))
-
-	router.GET("/profile", requireAuthMdw, userAPIService.GetUserProfileHdl())
-}
+//func SetupRoutes(router *gin.RouterGroup, serviceCtx sctx.ServiceContext) {
+//
+//	userAPIService := composer.ComposeUserAPIService(serviceCtx)
+//
+//	requireAuthMdw := middleware.RequireAuth(composer.ComposeAuthRPCClient(serviceCtx))
+//
+//	router.GET("/profile", requireAuthMdw, userAPIService.GetUserProfileHdl())
+//}
 
 func StartGRPCServices(serviceCtx sctx.ServiceContext) {
 	configComp := serviceCtx.MustGet(common.KeyCompConf).(common.Config)

@@ -36,7 +36,42 @@ message PublicUsersInfoResp {
   repeated PublicUserInfo users = 1;
 }
 
+message GetUserProfileRequest {}
+
+enum Gender {
+  GENDER_UNKNOWN = 0;
+  GENDER_MALE = 1;
+  GENDER_FEMALE = 2;
+}
+
+// Enum for SystemRole
+enum SystemRole {
+  ROLE_USER = 0;
+  ROLE_ADMIN = 1;
+  ROLE_SUPER_ADMIN = 2;
+}
+
+// Enum for Status
+enum Status {
+  STATUS_ACTIVE = 0;
+  STATUS_PENDING_VERIFY = 1;
+  STATUS_BANNED = 2;
+}
+
+message User {
+  string id = 1; // Assuming SQLModel includes an ID field
+  string first_name = 2;
+  string last_name = 3;
+  string email = 4;
+  string phone = 5;
+  string avatar = 6;
+  Gender gender = 7;
+  SystemRole system_role = 8;
+  Status status = 9;
+}
+
 service UserService {
+  rpc GetUserProfile(GetUserProfileRequest) returns (User);
   rpc GetUserById(GetUserByIdReq) returns (PublicUserInfoResp);
   rpc GetUsersByIds(GetUsersByIdsReq) returns (PublicUsersInfoResp);
   rpc CreateUser(CreateUserReq) returns (NewUserIdResp);

@@ -21,12 +21,17 @@ type grpcService struct {
 }
 
 func (s *grpcService) GetUserProfile(ctx context.Context) (*pb.User, error) {
-	// requester := core.GetRequester(ctx)
+	requester := core.GetRequester(ctx)
 
-	// uid, _ := core.FromBase58(requester.GetSubject())
-	// requesterId := int(uid.GetLocalID())
+	if requester == nil {
+		return nil, core.ErrForbidden.
+			WithError(entity.ErrCannotGetUser.Error())
+	}
 
-	user, err := s.repository.GetUserById(ctx, 3)
+	uid, _ := core.FromBase58(requester.GetSubject())
+	requesterId := int(uid.GetLocalID())
+
+	user, err := s.repository.GetUserById(ctx, requesterId)
 
 	if err != nil {
 		return nil, core.ErrUnauthorized.

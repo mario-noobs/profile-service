@@ -46,7 +46,7 @@ func NewUserServiceClient(cc grpc.ClientConnInterface) UserServiceClient {
 func (c *userServiceClient) GetUserProfile(ctx context.Context, opts ...grpc.CallOption) (*User, error) {
 	//cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(User)
-	err := c.cc.Invoke(ctx, UserService_GetUserProfile_FullMethodName, out, opts)
+	err := c.cc.Invoke(ctx, UserService_GetUserProfile_FullMethodName,nil,  out, opts...)
 	if err != nil {
 		return nil, err
 	}

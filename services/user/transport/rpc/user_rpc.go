@@ -10,8 +10,8 @@ import (
 )
 
 type Business interface {
-	GetUserDetails(ctx context.Context, id int) (*entity.User, error)
-	GetUsersByIds(ctx context.Context, ids []int) ([]entity.User, error)
+	GetUserDetails(ctx context.Context, id int) (*pb.User, error)
+	GetUsersByIds(ctx context.Context, ids []int) ([]pb.User, error)
 	CreateNewUser(ctx context.Context, data *entity.UserDataCreation) error
 }
 
@@ -21,12 +21,12 @@ type grpcService struct {
 }
 
 func (s *grpcService) GetUserProfile(ctx context.Context) (*pb.User, error) {
-	requester := core.GetRequester(ctx)
+	// requester := core.GetRequester(ctx)
 
-	uid, _ := core.FromBase58(requester.GetSubject())
-	requesterId := int(uid.GetLocalID())
+	// uid, _ := core.FromBase58(requester.GetSubject())
+	// requesterId := int(uid.GetLocalID())
 
-	user, err := s.repository.GetUserById(ctx, requesterId)
+	user, err := s.repository.GetUserById(ctx, 3)
 
 	if err != nil {
 		return nil, core.ErrUnauthorized.
@@ -34,16 +34,7 @@ func (s *grpcService) GetUserProfile(ctx context.Context) (*pb.User, error) {
 			WithDebug(err.Error())
 	}
 
-	return &pb.User{
-		Email:     user.Email,
-		Phone:     user.Phone,
-		LastName:  user.LastName,
-		FirstName: user.FirstName,
-		//Gender:     user.Gender,
-		//Status:     user.Status,
-		//SystemRole: user.SystemRole,
-		Avatar: user.Avatar,
-	}, nil
+	return user, nil
 }
 
 func NewService(business Business, repository business.UserRepository) *grpcService {
@@ -51,6 +42,22 @@ func NewService(business Business, repository business.UserRepository) *grpcServ
 }
 
 func (s *grpcService) GetUserById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.PublicUserInfoResp, error) {
+	user, err := s.business.GetUserDetails(ctx, int(req.Id))
+
+	if err != nil {
+		return nil, core.ErrInternalServerError.WithError(err.Error())
+	}
+
+	return &pb.PublicUserInfoResp{
+		User: &pb.PublicUserInfo{
+			Id:        int32(user.Id),
+			FirstName: user.FirstName,
+			LastName:  user.LastName,
+		},
+	}, nil
+}
+
+func (s *grpcService) GetUserDetailsById(ctx context.Context, req *pb.GetUserByIdReq) (*pb.PublicUserInfoResp, error) {
 	user, err := s.business.GetUserDetails(ctx, int(req.Id))
 
 	if err != nil {

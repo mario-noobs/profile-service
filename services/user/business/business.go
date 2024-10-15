@@ -2,13 +2,14 @@ package business
 
 import (
 	"context"
+	"demo-service/proto/pb"
 	"demo-service/services/user/entity"
 	"github.com/viettranx/service-context/core"
 )
 
 type UserRepository interface {
-	GetUserById(ctx context.Context, id int) (*entity.User, error)
-	GetUsersByIds(ctx context.Context, ids []int) ([]entity.User, error)
+	GetUserById(ctx context.Context, id int) (*pb.User, error)
+	GetUsersByIds(ctx context.Context, ids []int) ([]pb.User, error)
 	CreateNewUser(ctx context.Context, data *entity.UserDataCreation) error
 }
 
@@ -20,7 +21,7 @@ func NewBusiness(repository UserRepository) *business {
 	return &business{repository: repository}
 }
 
-func (biz *business) GetUserDetails(ctx context.Context, id int) (*entity.User, error) {
+func (biz *business) GetUserDetails(ctx context.Context, id int) (*pb.User, error) {
 	user, err := biz.repository.GetUserById(ctx, id)
 
 	if err != nil {
@@ -38,7 +39,7 @@ func (biz *business) GetUserDetails(ctx context.Context, id int) (*entity.User, 
 	return user, nil
 }
 
-func (biz *business) GetUsersByIds(ctx context.Context, ids []int) ([]entity.User, error) {
+func (biz *business) GetUsersByIds(ctx context.Context, ids []int) ([]pb.User, error) {
 	users, err := biz.repository.GetUsersByIds(ctx, ids)
 
 	if err != nil {

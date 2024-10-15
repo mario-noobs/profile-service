@@ -2,14 +2,15 @@ package mysql
 
 import (
 	"context"
+	"demo-service/proto/pb"
 	"demo-service/services/user/entity"
 	"github.com/pkg/errors"
 	"github.com/viettranx/service-context/core"
 	"gorm.io/gorm"
 )
 
-func (repo *mysqlRepo) GetUsersByIds(ctx context.Context, ids []int) ([]entity.User, error) {
-	var result []entity.User
+func (repo *mysqlRepo) GetUsersByIds(ctx context.Context, ids []int) ([]pb.User, error) {
+	var result []pb.User
 
 	if err := repo.db.
 		Table(entity.User{}.TableName()).
@@ -21,11 +22,11 @@ func (repo *mysqlRepo) GetUsersByIds(ctx context.Context, ids []int) ([]entity.U
 	return result, nil
 }
 
-func (repo *mysqlRepo) GetUserById(ctx context.Context, id int) (*entity.User, error) {
-	var data entity.User
+func (repo *mysqlRepo) GetUserById(ctx context.Context, id int) (*pb.User, error) {
+	var data pb.User
 
 	if err := repo.db.
-		Table(data.TableName()).
+		Table("users").
 		Where("id = ?", id).
 		First(&data).Error; err != nil {
 		if err == gorm.ErrRecordNotFound {

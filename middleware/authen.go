@@ -19,9 +19,14 @@ func AuthInterceptor(ac AuthClient) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},
-		_ *grpc.UnaryServerInfo,
+		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+
+		if info.FullMethod == "/pb.UserService/CreateUser" {
+			// Skip the auth interceptor for this method
+			return handler(ctx, req)
+		}
 		// Extract metadata (headers)
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {

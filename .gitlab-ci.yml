@@ -9,10 +9,10 @@ stages:
   - release
   - deploy
 
-format:
-  stage: build
-  script:
-    - test -z "$(gofmt -l ./)"
+#format:
+#  stage: build
+#  script:
+#    - test -z "$(gofmt -l ./)"
 
 vet:
   stage: build

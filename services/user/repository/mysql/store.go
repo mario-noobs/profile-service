@@ -1,9 +1,13 @@
 package mysql
 
-import "gorm.io/gorm"
+import (
+	"demo-service/helpers"
+	"gorm.io/gorm"
+)
 
 type mysqlRepo struct {
-	db *gorm.DB
+	db   *gorm.DB
+	time helpers.Timer
 }
 
 func NewMySQLRepository(db *gorm.DB) *mysqlRepo {

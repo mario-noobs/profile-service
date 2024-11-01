@@ -90,7 +90,7 @@ func StartGRPCServices(serviceCtx sctx.ServiceContext) {
 
 	logger.Infof("GRPC Server is listening on %d ...\n", configComp.GetGRPCPort())
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(grpc.UnaryInterceptor(middleware.AuthInterceptor(composer.ComposeAuthRPCClient(serviceCtx))))
 
 	pb.RegisterUserServiceServer(s, composer.ComposeUserGRPCService(serviceCtx))
 
